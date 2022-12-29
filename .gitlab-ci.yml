@@ -4,52 +4,50 @@ variables:
   VERSION: "2.0"
   DOCKER_VERSION: "20.10.21"
   DIND_VERSION: $DOCKER_VERSION'-dind'
-  BUILDX_IMAGE: "$CI_REGISTRY/docker_images/buildx:latest"
+  BUILDX_VERSION: "0.10"
+  BUILDX_IMAGE: "$CI_REGISTRY/docker_images/buildx:$BUILDX_VERSION"
   BUILDER_IMAGE: "${IMAGE_NAME}-builder-$CI_CONCURRENT_ID"
 
 stages:
   - linting
-  # - build
+  - build
   # - publish
 
 # before_script:
 #   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
-image: docker:$DOCKER_VERSION
+image: $BUILDX_IMAGE
 
 buildkit_toml:
   stage: .pre
   script:
-    - apk add gettext
     - envsubst < buildkitd.toml.tmpl > buildkitd.toml
   artifacts:
     paths:
       - buildkitd.toml
+
 hadolint:
   stage: linting
   image: registry.gitlab.com/pipeline-components/hadolint:latest
   script:
-    - cat buildkitd.toml
     - hadolint Dockerfile
-    # - cat buildkitd.toml
   allow_failure: true
-  # rules:
-  #   - changes:
-  #       - Dockerfile
+  rules:
+    - changes:
+        - Dockerfile
 
-# build_image:
-#   stage: build
-#   image: $BUILDX_IMAGE
-#   script:
-#     - docker buildx create --use --name ${BUILDER_IMAGE} --config=buildkitd.toml
-#     - docker buildx bake --load --file package_bake.hcl --progress plain
-#   # rules:
-#   #   - changes:
-#   #       - .gitlab-ci.yml
-#   #       - package_bake.hcl
-#   after_script:
-#     - docker buildx stop ${BUILDER_IMAGE}
-#     - docker buildx rm ${BUILDER_IMAGE}
+build_image:
+  stage: build
+  script:
+    - docker buildx create --use --name ${BUILDER_IMAGE} --config=buildkitd.toml
+    - docker buildx bake --load --file package_bake.hcl --progress plain
+  rules:
+    - changes:
+        - .gitlab-ci.yml
+        - package_bake.hcl
+  after_script:
+    - docker buildx stop ${BUILDER_IMAGE}
+    - docker buildx rm ${BUILDER_IMAGE}
 
 # publish_image:
 #   stage: publish
