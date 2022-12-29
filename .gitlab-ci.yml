@@ -22,6 +22,10 @@ buildkit_toml:
   script:
     - apk add gettext
     - envsubst < buildkitd.toml.tmpl > buildkitd.toml
+  artifacts:
+    untracked: false
+    when: on_success
+    expire_in: "30 days"
 
 hadolint:
   stage: linting
