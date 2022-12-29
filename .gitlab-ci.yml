@@ -1,7 +1,8 @@
 variables:
   IMAGE_NAME: "mqttunifiprotectbridge"
-  REGISTRY_IMAGE: "$PRIVATE_REGISTRY/$IMAGE_NAME"
   VERSION: "2.0"
+
+  REGISTRY_IMAGE: "$PRIVATE_REGISTRY/$IMAGE_NAME"
   DOCKER_VERSION: "20.10.21"
   DIND_VERSION: $DOCKER_VERSION'-dind'
   BUILDX_VERSION: "0.10"
@@ -49,15 +50,14 @@ build_image:
     - docker buildx stop ${BUILDER_IMAGE}
     - docker buildx rm ${BUILDER_IMAGE}
 
-# publish_image:
-#   stage: publish
-#   script:
-#     - update-ca-certificates
-#     - docker push ${REGISTRY_IMAGE}:${VERSION}-armv7
-#     - docker push ${REGISTRY_IMAGE}:${VERSION}-arm64
-#     - docker manifest create ${REGISTRY_IMAGE}:${VERSION} --amend ${REGISTRY_IMAGE}:${VERSION}-armv7 --amend ${REGISTRY_IMAGE}:${VERSION}-arm64
-#     - docker manifest push $REGISTRY_IMAGE:$VERSION
-#   # rules:
-#   #   - changes:
-#   #       - .gitlab-ci.yml
-#   #       - package_bake.hcl
+publish_image:
+  stage: publish
+  script:
+    - docker push ${REGISTRY_IMAGE}:${VERSION}-armv7
+    - docker push ${REGISTRY_IMAGE}:${VERSION}-arm64
+    - docker manifest create ${REGISTRY_IMAGE}:${VERSION} --amend ${REGISTRY_IMAGE}:${VERSION}-armv7 --amend ${REGISTRY_IMAGE}:${VERSION}-arm64
+    - docker manifest push $REGISTRY_IMAGE:$VERSION
+  rules:
+    - changes:
+        - .gitlab-ci.yml
+        - package_bake.hcl
