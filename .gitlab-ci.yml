@@ -17,7 +17,7 @@ stages:
 
 image: docker:$DOCKER_VERSION
 
-.buildkit_toml:
+buildkit_toml:
   stage: .pre
   script:
     - envsubst < buildkitd.toml.tmpl > buildkitd.toml
