@@ -26,8 +26,9 @@ hadolint:
   stage: linting
   image: registry.gitlab.com/pipeline-components/hadolint:latest
   script:
-    - hadolint Dockerfile
     - cat buildkitd.toml
+    - hadolint Dockerfile
+    # - cat buildkitd.toml
   allow_failure: true
   # rules:
   #   - changes:
