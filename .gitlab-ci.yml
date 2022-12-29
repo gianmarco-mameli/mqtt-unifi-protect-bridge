@@ -23,10 +23,8 @@ buildkit_toml:
     - apk add gettext
     - envsubst < buildkitd.toml.tmpl > buildkitd.toml
   artifacts:
-    untracked: false
-    when: on_success
-    expire_in: "30 days"
-
+    paths:
+      - buildkitd.toml
 hadolint:
   stage: linting
   image: registry.gitlab.com/pipeline-components/hadolint:latest
