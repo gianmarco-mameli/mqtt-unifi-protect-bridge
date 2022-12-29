@@ -4,7 +4,7 @@ variables:
   VERSION: "2.0"
   DOCKER_VERSION: "20.10.21"
   DIND_VERSION: $DOCKER_VERSION'-dind'
-  BUILDX_IMAGE: "gitlab-registry.docker.local/docker_images/buildx:latest"
+  BUILDX_IMAGE: "$CI_REGISTRY/docker_images/buildx:latest"
   BUILDER_IMAGE: "${IMAGE_NAME}-builder-$CI_CONCURRENT_ID"
 
 stages:
@@ -12,8 +12,8 @@ stages:
   # - build
   # - publish
 
-before_script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+# before_script:
+#   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
 image: docker:$DOCKER_VERSION
 
