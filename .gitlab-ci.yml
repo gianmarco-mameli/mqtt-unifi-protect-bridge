@@ -1,6 +1,6 @@
 variables:
   IMAGE_NAME: "mqttunifiprotectbridge"
-  VERSION: "2.0"
+  VERSION: "3.0"
 
   REGISTRY_IMAGE: "$PRIVATE_REGISTRY/$IMAGE_NAME"
   DOCKER_VERSION: "20.10.21"
